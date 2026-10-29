@@ -1,0 +1,132 @@
+name: Build custom PX4 firmware
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Use the full target name, including the label such as _default.
+  PX4_BOARD_TARGET: px4_fmu-v6x_default
+  PX4_BOOTLOADER_TARGET: px4_fmu-v6x_bootloader
+  PX4_BUILD_BOOTLOADER: "false"
+  PX4_DOCKER_IMAGE: px4io/px4-dev-nuttx-focal:2022-08-12
+
+jobs:
+  build:
+    name: Build PX4 firmware
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out source and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Validate PX4 build targets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Mirror the target discovery logic in the PX4 Makefile. This avoids
+          # splitting board names on underscores, which are legal in both the
+          # vendor and model directory names.
+          valid_targets="$(
+            find boards -maxdepth 3 -mindepth 3 -name '*.px4board' -print \
+              | sed -e 's|^boards/||' \
+              | sed -e 's|\.px4board$||' \
+              | sed -e 's|/|_|g' \
+              | sort
+          )"
+
+          validate_target() {
+            local target="$1"
+            if grep -Fxq "$target" <<< "$valid_targets"; then
+              echo "Valid target: $target"
+              return 0
+            fi
+
+            echo "::error::PX4 build target not found: $target"
+            if grep -Fxq "${target}_default" <<< "$valid_targets"; then
+              echo "Use the full target name: ${target}_default"
+            fi
+            echo "Targets containing the supplied name:"
+            grep -F "$target" <<< "$valid_targets" | head -n 40 || true
+            return 1
+          }
+
+          validate_target "${{ env.PX4_BOARD_TARGET }}"
+
+          if [ "${{ env.PX4_BUILD_BOOTLOADER }}" = "true" ]; then
+            validate_target "${{ env.PX4_BOOTLOADER_TARGET }}"
+          else
+            echo "Bootloader build is disabled."
+          fi
+
+      - name: Write build metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          {
+            echo "repository=$GITHUB_REPOSITORY"
+            echo "workflow_ref=$GITHUB_REF"
+            echo "commit=$(git rev-parse HEAD)"
+            echo "branch=$(git branch --show-current)"
+            echo "px4_description=$(git describe --tags --always --dirty)"
+            echo "board_target=${{ env.PX4_BOARD_TARGET }}"
+            echo "bootloader_target=${{ env.PX4_BOOTLOADER_TARGET }}"
+            echo "build_bootloader=${{ env.PX4_BUILD_BOOTLOADER }}"
+            echo "docker_image=${{ env.PX4_DOCKER_IMAGE }}"
+            echo "github_run_id=$GITHUB_RUN_ID"
+            echo "github_run_number=$GITHUB_RUN_NUMBER"
+            echo "built_utc=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          } > build/build-info.txt
+          cat build/build-info.txt
+
+      - name: Build PX4 firmware in official NuttX container
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          docker pull "$PX4_DOCKER_IMAGE"
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:/workspace" \
+            --workdir /workspace \
+            --env PX4_BOARD_TARGET \
+            --env PX4_BOOTLOADER_TARGET \
+            --env PX4_BUILD_BOOTLOADER \
+            "$PX4_DOCKER_IMAGE" \
+            bash -lc '
+              set -e
+              git config --global --add safe.directory /workspace
+
+              make "$PX4_BOARD_TARGET"
+
+              if [ "$PX4_BUILD_BOOTLOADER" = "true" ]; then
+                make "$PX4_BOOTLOADER_TARGET"
+              fi
+            '
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: px4-custom-${{ env.PX4_BOARD_TARGET }}-${{ github.run_number }}
+          path: |
+            build/build-info.txt
+            build/${{ env.PX4_BOARD_TARGET }}/*.px4
+            build/${{ env.PX4_BOARD_TARGET }}/*.elf
+            build/${{ env.PX4_BOARD_TARGET }}/*.bin
+            build/${{ env.PX4_BOARD_TARGET }}/*.hex
+            build/${{ env.PX4_BOARD_TARGET }}/*.map
+            build/${{ env.PX4_BOOTLOADER_TARGET }}/*.elf
+            build/${{ env.PX4_BOOTLOADER_TARGET }}/*.bin
+            build/${{ env.PX4_BOOTLOADER_TARGET }}/*.hex
+            build/${{ env.PX4_BOOTLOADER_TARGET }}/*.map
+          if-no-files-found: error
+          retention-days: 14
