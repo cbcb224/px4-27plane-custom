@@ -19,10 +19,17 @@
 - 默认分支：`codex/px4-1.16.2-custom`
 - 个人 remote 名称：`myrepo`
 - 首次烟雾构建：成功（目标 `px4_fmu-v6x_default`）
-- Actions 运行：[40840194077](https://github.com/cbcb224/px4-27plane-custom/actions/runs/40840194077)
-- 本机 artifact：`C:\Users\Administrator\Desktop\27plane\px4-artifacts\px4-custom-px4_fmu-v6x_default-1.zip`
+- 首次烟雾运行：[40840194077](https://github.com/cbcb224/px4-27plane-custom/actions/runs/40840194077)
+- 当前自制板目标：`p224_p224-aio-v1_default`
+- 当前成功运行：#7 [40860950848](https://github.com/cbcb224/px4-27plane-custom/actions/runs/40860950848)
+- 对应提交：`4996c86`（`Group P224 AIO PWM channels by timer`）
+- 本机 artifact：`C:\Users\Administrator\Desktop\27plane\px4-artifacts\px4-custom-p224_p224-aio-v1_default-7.zip`
+- ZIP SHA-256：`ad2c88a0da51c538a3023b17db414c118bcd93795b1fa94334861885c492c8db`
+- 本机固件：`C:\Users\Administrator\Desktop\27plane\px4-artifacts\px4-custom-p224_p224-aio-v1_default-7\p224_p224-aio-v1_default\p224_p224-aio-v1_default.px4`
+- 固件 SHA-256：`54d2f2138ceced141a644d6fd95271acbc9af7cd1573beb3a2461dd0e423b372`
+- 固件大小：`1,706,930` 字节
 
-> 当前仍是官方目标烟雾测试；真正自制板还需要完成后续 donor board 移植并把 `PX4_BOARD_TARGET` 改成自己的完整目标名。
+> 当前自制板目标已经能在云端生成固件，但尚未证明 PCB、传感器、PWM/DShot、电源和电机顺序真实正确。云编译成功不等于可以飞行。
 
 ## 文件说明
 
@@ -62,9 +69,10 @@
 3. **[已完成]** 已创建公开 fork，并保留 `origin` 为官方 PX4，使用 `myrepo` 推送自制分支。
 4. **[已完成]** 工作流已安装到 `.github/workflows/px4-custom-board.yml`。
 5. **[已完成]** `px4_fmu-v6x_default` 官方目标已在云端构建成功并上传 artifact。
-6. **下一步：** 选择最接近的 donor board，复制到 `boards/<vendor>/<model>/`，再改 board ID、Flash 布局、引脚、总线、驱动和启动脚本。
-7. 把工作流目标改成自己的完整目标名，例如 `acme_mypilot-v1_default`，重新推送并运行。
-8. 从 Actions 下载 artifact，使用 Windows QGroundControl 烧录 `.px4`。首次 bootloader 用 SWD/JTAG 或芯片 DFU 烧录。
+6. **[已完成]** 已创建 `boards/p224/p224-aio-v1/`，并把工作流目标改为 `p224_p224-aio-v1_default`。
+7. **[已完成]** 九个 PWM 输出已按 TIM1、TIM3、TIM4、TIM2 分组，Run #7 云编译成功。
+8. **下一步：** 使用限流电源并拆除螺旋桨，先核对 bootloader、串口输出、IMU、电源监控和九路 PWM/DShot 波形；首次 bootloader 仍用 SWD/JTAG 或芯片 DFU 烧录。
+9. 从 Actions 下载最新 artifact，台架检查通过后再使用 Windows QGroundControl 烧录 `.px4`，不要直接把“编译成功”当作可以飞行。
 
 ## 云编译边界
 

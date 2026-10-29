@@ -238,18 +238,52 @@ SWDIO：U19.A10/PA13 → TP10.1
 
 ## 4.1 电机 PWM
 
-| 通道 | MCU 球位/引脚 | 网络 | 驱动 |
-|---|---|---|---|
-| M1 | K5/PE9 | `M1` | U21.6 |
-| M2 | K6/PE13 | `M2` | U23.6 |
-| M3 | H6/PE11 | `M3` | U25.6 |
-| M4 | G7/PE14 | `M4` | U27.6 |
-| PWM9 | J7/PB10 | `TIM2-CH3` | PX4 定时器 PWM 输出 |
+当前 `timer_io_channels[]` 的九个输出如下。PX4 的数组顺序就是直接 PWM 通道号，因此必须把同一 TIM 的通道连续排列。
+
+| PX4 通道 | 定时器/通道 | MCU 球位/引脚 | 板上网络 | 驱动/说明 |
+|---|---|---|---|---|
+| PWM1 | TIM1_CH1 | K5/PE9 | `M1` | U21.6 |
+| PWM2 | TIM1_CH3 | K6/PE13 | `M2` | U23.6 |
+| PWM3 | TIM1_CH2 | H6/PE11 | `M3` | U25.6 |
+| PWM4 | TIM1_CH4 | G7/PE14 | `M4` | U27.6 |
+| PWM5 | TIM3_CH1 | PB4 | `M5` | 板上输出网络 |
+| PWM6 | TIM3_CH2 | PB5 | `M8` | 板上输出网络 |
+| PWM7 | TIM4_CH1 | PB6 | `M7` | 板上输出网络 |
+| PWM8 | TIM4_CH2 | PB7 | `M6` | 板上输出网络 |
+| PWM9 | TIM2_CH3 | J7/PB10 | `TIM2-CH3` | 已编译，暂未分配默认输出功能 |
+
+### PWM6/PWM8 编号与物理网络
+
+为了让 TIM3 和 TIM4 的通道分别连续，PWM 数组的后四路顺序调整为：
+
+```text
+PWM5 = PB4 = TIM3_CH1 = M5
+PWM6 = PB5 = TIM3_CH2 = M8
+PWM7 = PB6 = TIM4_CH1 = M7
+PWM8 = PB7 = TIM4_CH2 = M6
+```
+
+因此直接 PWM 编号中的 **PWM6 对应板上 M8**，**PWM8 对应板上 M6**。板级启动文件用以下默认参数补偿：
+
+```text
+PWM_MAIN_FUNC1=101
+PWM_MAIN_FUNC2=102
+PWM_MAIN_FUNC3=103
+PWM_MAIN_FUNC4=104
+PWM_MAIN_FUNC5=105
+PWM_MAIN_FUNC6=108
+PWM_MAIN_FUNC7=107
+PWM_MAIN_FUNC8=106
+```
+
+这样逻辑输出 6 会路由到物理 PWM8/PB7/M6，逻辑输出 8 会路由到物理 PWM6/PB5/M8。
 
 PB10 的当前编译规则：
 
 - 定时器功能：**TIM2_CH3 → PX4 PWM9，编译启用**。
 - 普通 GPIO/J7 功能：**不单独编译**。
+- 当前未设置 `PWM_MAIN_FUNC9`，PWM9 作为预留输出。
+- 当前飞控配置是 `CA_ROTOR_COUNT=4`、`SYS_AUTOSTART=4001` 的四旋翼；M5～M8 已保留映射，但尚未参与当前四旋翼控制。
 
 ## 4.2 其他 GPIO 与 ADC
 
@@ -471,7 +505,13 @@ X1.2、X1.4 → GND
    - 通过独立片选避免同时驱动。
    - 板级配置中应保持两个 CS 独立。
 
-5. **所有传感器中断脚目前未连接到 MCU。**
+5. **PWM 必须按定时器分组，并通过输出功能参数保持 M6/M7 不变。**
+   - `PWM5/PWM6` 同属 TIM3，`PWM7/PWM8` 同属 TIM4，数组内不能交叉混排。
+   - 分组后 PWM6 实际是 PB5/M8，PWM8 实际是 PB7/M6。
+   - `PWM_MAIN_FUNC6=108`、`PWM_MAIN_FUNC7=107`、`PWM_MAIN_FUNC8=106` 用于补偿编号。
+   - 四旋翼当前只使用 Motor1～Motor4；上电前仍须用示波器或逻辑分析仪逐路核对。
+
+6. **所有传感器中断脚目前未连接到 MCU。**
    - ICM-42688 INT1 无网络，INT2 接 GND。
    - BMI088 INT1～INT4 未连接 MCU。
    - IST8310 DRDY 无网络。
@@ -485,6 +525,10 @@ X1.2、X1.4 → GND
 | I2C1 SCL/SDA | `I2C1-SCL/SDA` | 保留，焊盘已引出 |
 | IO1 / U28.6 | `IO1` | 不编译 |
 | PA3 通用 IO | `IO1` | 不编译 |
+| TIM3_CH1 | `M5` | 编译为 PWM5/PB4 |
+| TIM3_CH2 | `M8` | 编译为 PWM6/PB5 |
+| TIM4_CH1 | `M7` | 编译为 PWM7/PB6 |
+| TIM4_CH2 | `M6` | 编译为 PWM8/PB7 |
 | TIM2_CH3 | `TIM2-CH3` | 编译为 PWM9 |
 | J7/PB10 普通 GPIO | `TIM2-CH3` | 不单独编译 |
 | HSE | X1 | 16 MHz |
