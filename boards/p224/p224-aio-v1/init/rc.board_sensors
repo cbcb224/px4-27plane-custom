@@ -12,5 +12,8 @@ bmi088 -s -b 1 -G -R 6 start
 # Internal SPI2 ICM-42688-P
 icm42688p -s -b 2 -R 6 start
 
+# Internal magnetometer
+ist8310 -I -R 2 start
+
 # Internal baro
 dps310 -I start -a 118
