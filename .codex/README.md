@@ -5,7 +5,7 @@
 - Windows 源码目录：`C:\Users\Administrator\Desktop\27plane\px4`
 - PX4 基线：`v1.16.2`
 - 当前开发分支：`codex/px4-1.16.2-custom`
-- 当前提交：`aaa6eaae3ee8eeb8ff66380d0338d2470e0ac07b`
+- 当前正式固件提交：`aaa6eaae3ee8eeb8ff66380d0338d2470e0ac07b`
 - GitHub 云编译仓库：[cbcb224/px4-27plane-custom](https://github.com/cbcb224/px4-27plane-custom)
 - Windows 只负责：编辑源码、Git 提交与推送、下载构建产物、使用 QGroundControl 烧录
 - 固件构建全部在 GitHub Actions 的 Ubuntu 运行器和官方 NuttX 容器中完成
@@ -64,6 +64,7 @@ C:\Users\Administrator\Desktop\27plane\px4-artifacts\px4-custom-p224_p224-aio-v1
 | 文件 | 用途 |
 | --- | --- |
 | [P224-AIO-V1.0-PX4完整工作流程报告.md](./P224-AIO-V1.0-PX4完整工作流程报告.md) | 从方案选择、Git 流程、板级移植、云编译到烧录与台架验证的完整报告 |
+| [代码修改记录.md](./代码修改记录.md) | 按时间顺序记录所有代码、配置、脚本、工作流和文档修改；后续修改必须持续更新 |
 | [PX4-1.16.2-GitHub云编译教程.md](./PX4-1.16.2-GitHub云编译教程.md) | GitHub 仓库配置、自制板移植、board ID、云编译和首板调试教程 |
 | [27赛季无人机-AIO-V1.0-PX4引脚映射.md](./27赛季无人机-AIO-V1.0-PX4引脚映射.md) | AIO V1.0 的 MCU 球位、网络、传感器、串口、PWM 和编译决策 |
 | [github-actions/px4-custom-board.yml](./github-actions/px4-custom-board.yml) | GitHub Actions 工作流模板 |
@@ -71,13 +72,13 @@ C:\Users\Administrator\Desktop\27plane\px4-artifacts\px4-custom-p224_p224-aio-v1
 
 ## 当前源码结论
 
-当前目录是一份基于 PX4 `v1.16.2` 的完整工作树，已在其上形成 18 个自制板相关提交，**不要删除后重新下载**。
+当前目录是一份基于 PX4 `v1.16.2` 的完整工作树。截至正式固件提交 `aaa6eaa` 已有 18 个提交；之后还有文档和规则提交，**不要删除后重新下载**。
 
 本次检查结果：
 
 - Git 分支：`codex/px4-1.16.2-custom`
-- 当前提交：`aaa6eaae3ee8eeb8ff66380d0338d2470e0ac07b`
-- `git describe`：`v1.16.2-18-gaaa6eaae3e`
+- 当前正式固件提交：`aaa6eaae3ee8eeb8ff66380d0338d2470e0ac07b`
+- 正式固件提交 `git describe`：`v1.16.2-18-gaaa6eaae3e`
 - Git 子模块：35 个
 - `origin`：官方 `PX4/PX4-Autopilot`
 - `myrepo`：个人 `cbcb224/px4-27plane-custom`
