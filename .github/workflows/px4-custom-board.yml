@@ -10,8 +10,8 @@ permissions:
 
 env:
   # Use the full target name, including the label such as _default.
-  PX4_BOARD_TARGET: px4_fmu-v6x_default
-  PX4_BOOTLOADER_TARGET: px4_fmu-v6x_bootloader
+  PX4_BOARD_TARGET: p224_p224-aio-v1_default
+  PX4_BOOTLOADER_TARGET: p224_p224-aio-v1_bootloader
   PX4_BUILD_BOOTLOADER: "false"
   PX4_DOCKER_IMAGE: px4io/px4-dev-nuttx-focal:2022-08-12
 
