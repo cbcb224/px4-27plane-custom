@@ -1,16 +1,28 @@
-﻿# PX4 1.16.2 自制飞控板：GitHub 云编译资料
+# PX4 1.16.2 自制飞控板：GitHub 云编译资料
 
 本目录用于 **PX4 1.16.2 自制飞控板的纯 GitHub Actions 云编译**。
 
 - Windows 源码目录：`C:\Users\Administrator\Desktop\27plane\px4`
 - PX4 基线：精确标签 `v1.16.2`
 - 当前开发分支：`codex/px4-1.16.2-custom`
+- GitHub 云编译仓库：[cbcb224/px4-27plane-custom](https://github.com/cbcb224/px4-27plane-custom)
 - Windows 只负责：编辑源码、Git 提交与推送、下载构建产物、使用 QGroundControl 烧录
 - 固件构建全部在 GitHub Actions 的 Ubuntu 运行器和官方 NuttX 容器中完成
 - **不需要安装或配置 WSL、Ubuntu、Docker Desktop、CMake、ARM 交叉编译器或本地 `make`**
 - 首次 bootloader 烧录仍需 SWD/JTAG、芯片 DFU 或板载调试器
 
 > GitHub Actions 会在每次运行时自动检出你的 GitHub 仓库和子模块。你不需要手动把源码“上传到云端构建机”，只需推送 Git 提交。
+
+## 当前云编译状态
+
+- 仓库类型：官方 PX4 的公开 fork
+- 默认分支：`codex/px4-1.16.2-custom`
+- 个人 remote 名称：`myrepo`
+- 首次烟雾构建：成功（目标 `px4_fmu-v6x_default`）
+- Actions 运行：[40840194077](https://github.com/cbcb224/px4-27plane-custom/actions/runs/40840194077)
+- 本机 artifact：`C:\Users\Administrator\Desktop\27plane\px4-artifacts\px4-custom-px4_fmu-v6x_default-1.zip`
+
+> 当前仍是官方目标烟雾测试；真正自制板还需要完成后续 donor board 移植并把 `PX4_BOARD_TARGET` 改成自己的完整目标名。
 
 ## 文件说明
 
@@ -47,10 +59,10 @@
    powershell -ExecutionPolicy Bypass -File "C:\Users\Administrator\Desktop\27plane\px4\.codex\scripts\check-cloud-build-setup.ps1"
    ```
 
-3. 在自己的 GitHub 账号中创建仓库，把当前源码推送到该仓库；保留 `origin` 为官方 PX4，另加一个自己的 remote。
-4. 把工作流模板复制到 `.github/workflows/px4-custom-board.yml`。
-5. 第一次先保留 `PX4_BOARD_TARGET: px4_fmu-v6x_default`，在云端做官方目标烟雾测试，排除仓库、子模块和 Actions 配置问题。
-6. 选择最接近的 donor board，复制到 `boards/<vendor>/<model>/`，再改 board ID、Flash 布局、引脚、总线、驱动和启动脚本。
+3. **[已完成]** 已创建公开 fork，并保留 `origin` 为官方 PX4，使用 `myrepo` 推送自制分支。
+4. **[已完成]** 工作流已安装到 `.github/workflows/px4-custom-board.yml`。
+5. **[已完成]** `px4_fmu-v6x_default` 官方目标已在云端构建成功并上传 artifact。
+6. **下一步：** 选择最接近的 donor board，复制到 `boards/<vendor>/<model>/`，再改 board ID、Flash 布局、引脚、总线、驱动和启动脚本。
 7. 把工作流目标改成自己的完整目标名，例如 `acme_mypilot-v1_default`，重新推送并运行。
 8. 从 Actions 下载 artifact，使用 Windows QGroundControl 烧录 `.px4`。首次 bootloader 用 SWD/JTAG 或芯片 DFU 烧录。
 
