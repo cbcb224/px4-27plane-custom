@@ -353,24 +353,14 @@
 
 /* Alternate function pin selections ************************************************/
 
-#define GPIO_USART1_RX   GPIO_USART1_RX_2   /* PA10 */
-#define GPIO_USART1_TX   GPIO_USART1_TX_2   /* PA9  */
+#define GPIO_USART2_RX   GPIO_USART2_RX_2   /* PD6  */
+#define GPIO_USART2_TX   GPIO_USART2_TX_2   /* PD5  */
 
-#define GPIO_USART2_RX   GPIO_USART2_RX_1   /* PA3  */
-#define GPIO_USART2_TX   GPIO_USART2_TX_1   /* PA2  */
+#define GPIO_UART4_RX    GPIO_UART4_RX_5    /* PD0  */
+#define GPIO_UART4_TX    GPIO_UART4_TX_5    /* PD1  */
 
-#define GPIO_USART3_RX   GPIO_USART3_RX_3   /* PD9  */
-#define GPIO_USART3_TX   GPIO_USART3_TX_3   /* PD8  */
-
-#define GPIO_UART4_RX    GPIO_UART4_RX_2    /* PA1  */
-#define GPIO_UART4_TX    GPIO_UART4_TX_2    /* PA0  */
-
-#define GPIO_USART6_RX   GPIO_USART6_RX_1   /* PC7  */
-#define GPIO_USART6_TX   GPIO_USART6_TX_1   /* PC6  */
-
-#define GPIO_UART7_RX    GPIO_UART7_RX_3    /* PE7  */
-#define GPIO_UART7_TX    GPIO_UART7_TX_3    /* PE8  */
-
+#define GPIO_UART7_RX    GPIO_UART7_RX_2    /* PB3  */
+#define GPIO_UART7_TX    GPIO_UART7_TX_1    /* PA15 */
 
 #define GPIO_UART8_RX    GPIO_UART8_RX_1    /* PE0  */
 #define GPIO_UART8_TX    GPIO_UART8_TX_1    /* PE1  */
