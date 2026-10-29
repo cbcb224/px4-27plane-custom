@@ -148,9 +148,13 @@ else {
     'unknown'
 }
 
-$exactTagResult = Invoke-Git @('describe', '--tags', '--exact-match')
-$exactTag = if ($exactTagResult.ExitCode -eq 0 -and $exactTagResult.Output.Count -gt 0) {
-    [string]$exactTagResult.Output[0]
+$exactTagResult = Invoke-Git @('tag', '--points-at', 'HEAD')
+$exactTags = @($exactTagResult.Output | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) })
+$exactTag = if ($exactTags -contains 'v1.16.2') {
+    'v1.16.2'
+}
+elseif ($exactTags.Count -gt 0) {
+    $exactTags -join ', '
 }
 else {
     '(none)'
