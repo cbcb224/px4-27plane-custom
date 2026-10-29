@@ -40,15 +40,17 @@ constexpr io_timers_t io_timers[MAX_IO_TIMERS] = {
 	initIOTimer(Timer::Timer4, DMA{DMA::Index1}),
 };
 
+// PX4 requires channels from the same timer to be contiguous. The array order is
+// also the direct PWM channel index (PWM1..PWM9).
 constexpr timer_io_channels_t timer_io_channels[MAX_TIMER_IO_CHANNELS] = {
 	initIOTimerChannel(io_timers, {Timer::Timer1, Timer::Channel1}, {GPIO::PortE, GPIO::Pin9}),
 	initIOTimerChannel(io_timers, {Timer::Timer1, Timer::Channel3}, {GPIO::PortE, GPIO::Pin13}),
 	initIOTimerChannel(io_timers, {Timer::Timer1, Timer::Channel2}, {GPIO::PortE, GPIO::Pin11}),
 	initIOTimerChannel(io_timers, {Timer::Timer1, Timer::Channel4}, {GPIO::PortE, GPIO::Pin14}),
 	initIOTimerChannel(io_timers, {Timer::Timer3, Timer::Channel1}, {GPIO::PortB, GPIO::Pin4}),
-	initIOTimerChannel(io_timers, {Timer::Timer4, Timer::Channel2}, {GPIO::PortB, GPIO::Pin7}),
-	initIOTimerChannel(io_timers, {Timer::Timer4, Timer::Channel1}, {GPIO::PortB, GPIO::Pin6}),
 	initIOTimerChannel(io_timers, {Timer::Timer3, Timer::Channel2}, {GPIO::PortB, GPIO::Pin5}),
+	initIOTimerChannel(io_timers, {Timer::Timer4, Timer::Channel1}, {GPIO::PortB, GPIO::Pin6}),
+	initIOTimerChannel(io_timers, {Timer::Timer4, Timer::Channel2}, {GPIO::PortB, GPIO::Pin7}),
 	initIOTimerChannel(io_timers, {Timer::Timer2, Timer::Channel3}, {GPIO::PortB, GPIO::Pin10}),
 };
 
