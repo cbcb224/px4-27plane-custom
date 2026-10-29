@@ -110,8 +110,12 @@
 #define BOARD_HAS_PWM  DIRECT_PWM_OUTPUT_CHANNELS
 
 
-#define GPIO_TONE_ALARM_IDLE    /* PD15 */ (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_2MHz|GPIO_OUTPUT_CLEAR|GPIO_PORTD|GPIO_PIN15)
-#define GPIO_TONE_ALARM_GPIO    /* PD15 */ (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_2MHz|GPIO_OUTPUT_SET|GPIO_PORTD|GPIO_PIN15)
+/* Active-high passive buzzer driven by TIM8_CH2 on PC7 */
+#define TONE_ALARM_TIMER        8
+#define TONE_ALARM_CHANNEL      2
+
+#define GPIO_TONE_ALARM_IDLE    /* PC7 */ (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_2MHz|GPIO_OUTPUT_CLEAR|GPIO_PORTC|GPIO_PIN7)
+#define GPIO_TONE_ALARM         GPIO_TIM8_CH2OUT_1
 
 /* USB OTG FS
  *
@@ -122,8 +126,8 @@
 
 
 /* High-resolution timer */
-#define HRT_TIMER               2  /* use timer8 for the HRT */
-#define HRT_TIMER_CHANNEL       1  /* use capture/compare channel 3 */
+#define HRT_TIMER               5
+#define HRT_TIMER_CHANNEL       1
 
 
 /* SD Card */
@@ -138,6 +142,7 @@
 
 #define PX4_GPIO_INIT_LIST { \
 		PX4_ADC_GPIO, \
+		GPIO_TONE_ALARM_IDLE, \
 	}
 
 #define BOARD_ENABLE_CONSOLE_BUFFER
