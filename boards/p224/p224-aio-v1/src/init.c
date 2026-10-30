@@ -179,7 +179,7 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 
 	if (ret != OK) {
 		led_on(LED_BLUE);
-		return ret;
+		/* SDIO is optional; keep booting so USB CDC and NSH can start. */
 	}
 
 #endif
