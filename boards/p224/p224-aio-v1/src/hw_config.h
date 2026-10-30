@@ -90,6 +90,13 @@
 #define BOOTLOADER_DELAY               5000
 #define INTERFACE_USB                  1
 #define INTERFACE_USB_CONFIG           "/dev/ttyACM0"
+/*
+ * PX4's STM32 bootloader common code references GPIO_OTGFS_VBUS even though
+ * this board does not route a VBUS-sense signal. Keep a bootloader-only
+ * compile placeholder for PA8; application USB startup uses
+ * BOARD_USB_VBUS_NOT_CONNECTED in board_config.h instead.
+ */
+#define GPIO_OTGFS_VBUS                /* PA8, not connected */ (GPIO_INPUT|GPIO_PULLDOWN|GPIO_SPEED_100MHz|GPIO_PORTA|GPIO_PIN8)
 #define BOARD_VBUS                     MK_GPIO_INPUT(GPIO_OTGFS_VBUS)
 
 //#define USE_VBUS_PULL_DOWN
