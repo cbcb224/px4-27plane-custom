@@ -119,10 +119,11 @@
 
 /* USB OTG FS
  *
- * PA8  OTG_FS_VBUS VBUS sensing
+ * This board does not route a VBUS sense signal to the MCU. NuttX forces
+ * the OTG FS B-session valid when CONFIG_USBDEV_VBUSSENSING is disabled.
  */
 
-#define GPIO_OTGFS_VBUS         /* PA8 */ (GPIO_INPUT|GPIO_PULLDOWN|GPIO_SPEED_100MHz|GPIO_PORTA|GPIO_PIN8)
+#define BOARD_USB_VBUS_NOT_CONNECTED 1
 
 
 /* High-resolution timer */

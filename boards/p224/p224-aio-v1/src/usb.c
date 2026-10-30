@@ -57,8 +57,29 @@ __EXPORT void stm32_usbinitialize(void)
 
 	/* Configure the OTG FS VBUS sensing GPIO, Power On, and Overcurrent GPIOs */
 
-#ifdef CONFIG_STM32H7_OTGFS
+#if defined(CONFIG_STM32H7_OTGFS) && defined(GPIO_OTGFS_VBUS)
 	stm32_configgpio(GPIO_OTGFS_VBUS);
+#endif
+}
+
+/************************************************************************************
+ * Name: board_read_VBUS_state
+ *
+ * Description:
+ *   This board has no VBUS sense connection. NuttX keeps the OTG FS device
+ *   session valid without hardware VBUS sensing, so report USB as connected.
+ *   This allows cdcacm_autostart to initialize CDC ACM without a sense pin.
+ *
+ * Returns - 0 if connected.
+ *
+ ************************************************************************************/
+
+int board_read_VBUS_state(void)
+{
+#ifdef BOARD_USB_VBUS_NOT_CONNECTED
+	return 0;
+#else
+	return (px4_arch_gpioread(GPIO_OTGFS_VBUS) ? 0 : 1);
 #endif
 }
 
